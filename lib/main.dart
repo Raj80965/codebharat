@@ -35,11 +35,11 @@ class CodeBharatApp extends StatelessWidget {
       title: 'CodeBharat',
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: const Color(0xFF050505), // Pitch Black
+        scaffoldBackgroundColor: const Color(0xFF09090B), // Obsidian Black
         colorScheme: const ColorScheme.dark(
-          primary: Colors.deepPurpleAccent, // Vibrant Purple
-          secondary: Colors.cyanAccent, // Neon Cyan
-          surface: Color(0xFF111116), // Ultra Dark Surface
+          primary: Color(0xFF4F46E5), // Electric Indigo
+          secondary: Color(0xFF0EA5E9), // Deep Sky Blue
+          surface: Color(0xFF18181B), // Zinc-900 Surface
         ),
         textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme).apply(
           bodyColor: Colors.white,
@@ -505,20 +505,20 @@ class _TransliterateTranslateHomeState
         boxShadow: [
           BoxShadow(
             color: isJarvisListening
-                ? Colors.cyanAccent.withOpacity(0.8)
+                ? colors.secondary.withOpacity(0.6)
                 : isJarvisSpeaking
-                    ? Colors.deepPurpleAccent.withOpacity(0.8)
-                    : Colors.deepPurpleAccent.withOpacity(0.2),
-            blurRadius: isJarvisListening || isJarvisSpeaking ? 40 : 20,
-            spreadRadius: isJarvisListening || isJarvisSpeaking ? 10 : 2,
+                    ? colors.primary.withOpacity(0.6)
+                    : colors.primary.withOpacity(0.1),
+            blurRadius: isJarvisListening || isJarvisSpeaking ? 30 : 15,
+            spreadRadius: isJarvisListening || isJarvisSpeaking ? 5 : 1,
           ),
         ],
         gradient: RadialGradient(
           colors: isJarvisListening
-              ? [Colors.cyanAccent, const Color(0xFF0B0B1A)]
+              ? [colors.secondary, const Color(0xFF09090B)]
               : isJarvisSpeaking
-                  ? [Colors.deepPurpleAccent, const Color(0xFF0B0B1A)]
-                  : [Colors.deepPurple.withOpacity(0.5), const Color(0xFF050505)],
+                  ? [colors.primary, const Color(0xFF09090B)]
+                  : [colors.primary.withOpacity(0.3), const Color(0xFF09090B)],
         ),
       ),
       child: Center(
@@ -854,9 +854,9 @@ class _TransliterateTranslateHomeState
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(colors: [Colors.deepPurpleAccent, Colors.blueAccent]),
+                    gradient: LinearGradient(colors: [colors.primary, colors.secondary]),
                     borderRadius: BorderRadius.circular(12),
-                    boxShadow: [BoxShadow(color: Colors.deepPurpleAccent.withOpacity(0.4), blurRadius: 10, offset: const Offset(0, 4))],
+                    boxShadow: [BoxShadow(color: colors.primary.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 4))],
                   ),
                   child: ElevatedButton.icon(
                     onPressed: _loading ? null : _doAutoDetectAndTranslate,
@@ -875,14 +875,15 @@ class _TransliterateTranslateHomeState
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(colors: [Colors.cyanAccent, Colors.tealAccent]),
+                    gradient: LinearGradient(colors: [const Color(0xFF27272A), const Color(0xFF18181B)]),
                     borderRadius: BorderRadius.circular(12),
-                    boxShadow: [BoxShadow(color: Colors.cyanAccent.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 4))],
+                    border: Border.all(color: const Color(0xFF3F3F46), width: 1),
+                    boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.4), blurRadius: 10, offset: const Offset(0, 4))],
                   ),
                   child: ElevatedButton.icon(
                     onPressed: _loading ? null : _doTransliterate,
-                    icon: const Icon(Icons.language, color: Colors.black87),
-                    label: Text("Transliterate", style: GoogleFonts.poppins(fontWeight: FontWeight.w600, color: Colors.black87)),
+                    icon: const Icon(Icons.language, color: Colors.white70),
+                    label: Text("Transliterate", style: GoogleFonts.poppins(fontWeight: FontWeight.w600, color: Colors.white70)),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       backgroundColor: Colors.transparent,
