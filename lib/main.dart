@@ -35,11 +35,11 @@ class CodeBharatApp extends StatelessWidget {
       title: 'CodeBharat',
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: const Color(0xFF0F172A), // Midnight Slate
+        scaffoldBackgroundColor: const Color(0xFF050505), // Pitch Black
         colorScheme: const ColorScheme.dark(
-          primary: Color(0xFF6366F1), // Enterprise Indigo
-          secondary: Color(0xFF38BDF8), // Light Blue Accent
-          surface: Color(0xFF1E293B), // Slate Blue Surface
+          primary: Colors.deepPurpleAccent, // Vibrant Purple
+          secondary: Colors.cyanAccent, // Neon Cyan
+          surface: Color(0xFF111116), // Ultra Dark Surface
         ),
         textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme).apply(
           bodyColor: Colors.white,
@@ -505,20 +505,20 @@ class _TransliterateTranslateHomeState
         boxShadow: [
           BoxShadow(
             color: isJarvisListening
-                ? colors.primary.withOpacity(0.5)
+                ? Colors.cyanAccent.withOpacity(0.8)
                 : isJarvisSpeaking
-                    ? colors.secondary.withOpacity(0.5)
-                    : Colors.transparent,
-            blurRadius: isJarvisListening || isJarvisSpeaking ? 20 : 0,
-            spreadRadius: isJarvisListening || isJarvisSpeaking ? 5 : 0,
+                    ? Colors.deepPurpleAccent.withOpacity(0.8)
+                    : Colors.deepPurpleAccent.withOpacity(0.2),
+            blurRadius: isJarvisListening || isJarvisSpeaking ? 40 : 20,
+            spreadRadius: isJarvisListening || isJarvisSpeaking ? 10 : 2,
           ),
         ],
         gradient: RadialGradient(
           colors: isJarvisListening
-              ? [colors.primary, const Color(0xFF1E293B)]
+              ? [Colors.cyanAccent, const Color(0xFF0B0B1A)]
               : isJarvisSpeaking
-                  ? [colors.secondary, const Color(0xFF1E293B)]
-                  : [const Color(0xFF334155), const Color(0xFF1E293B)],
+                  ? [Colors.deepPurpleAccent, const Color(0xFF0B0B1A)]
+                  : [Colors.deepPurple.withOpacity(0.5), const Color(0xFF050505)],
         ),
       ),
       child: Center(
@@ -849,29 +849,43 @@ class _TransliterateTranslateHomeState
             // Primary Translate / Transliterate Buttons
             Row(children: [
               Expanded(
-                child: FilledButton.icon(
-                  onPressed: _loading ? null : _doAutoDetectAndTranslate,
-                  icon: Icon(Icons.g_translate),
-                  label: Text("Translate", style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
-                  style: FilledButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 16),
-                    backgroundColor: colors.primary.withOpacity(0.15),
-                    foregroundColor: colors.primary,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(colors: [Colors.deepPurpleAccent, Colors.blueAccent]),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [BoxShadow(color: Colors.deepPurpleAccent.withOpacity(0.4), blurRadius: 10, offset: const Offset(0, 4))],
+                  ),
+                  child: ElevatedButton.icon(
+                    onPressed: _loading ? null : _doAutoDetectAndTranslate,
+                    icon: const Icon(Icons.g_translate, color: Colors.white),
+                    label: Text("Translate", style: GoogleFonts.poppins(fontWeight: FontWeight.w600, color: Colors.white)),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
                   ),
                 ),
               ),
-              SizedBox(width: 12),
+              const SizedBox(width: 12),
               Expanded(
-                child: FilledButton.icon(
-                  onPressed: _loading ? null : _doTransliterate,
-                  icon: Icon(Icons.language),
-                  label: Text("Transliterate", style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
-                  style: FilledButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 16),
-                    backgroundColor: colors.secondary.withOpacity(0.15),
-                    foregroundColor: colors.secondary,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(colors: [Colors.cyanAccent, Colors.tealAccent]),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [BoxShadow(color: Colors.cyanAccent.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 4))],
+                  ),
+                  child: ElevatedButton.icon(
+                    onPressed: _loading ? null : _doTransliterate,
+                    icon: const Icon(Icons.language, color: Colors.black87),
+                    label: Text("Transliterate", style: GoogleFonts.poppins(fontWeight: FontWeight.w600, color: Colors.black87)),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
                   ),
                 ),
               ),
