@@ -46973,7 +46973,7 @@ return A.z($async$yx,r)},
 Ri(){var s,r=this.c
 if(r==null)return
 s=t.X
-A.aGh(r,"/login",s,s)},
+A.aGh(r,"/home",s,s)},
 l(){this.f.l()
 var s=this.d
 s===$&&A.a()
