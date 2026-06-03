@@ -11,6 +11,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
+import 'dart:ui';
+import 'widgets/glass_container.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter/services.dart';
@@ -739,28 +742,40 @@ class _TransliterateTranslateHomeState
           ),
         ),
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFF0F0F1E), Color(0xFF1A1A2E)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+      body: Stack(
+        children: [
+          Container(color: const Color(0xFF0F0F1E)),
+          Positioned(
+            top: -100, left: -100,
+            child: Container(
+              width: 300, height: 300,
+              decoration: BoxDecoration(shape: BoxShape.circle, color: colors.primary.withOpacity(0.2)),
+            ),
           ),
-        ),
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+          Positioned(
+            bottom: -50, right: -100,
+            child: Container(
+              width: 350, height: 350,
+              decoration: BoxDecoration(shape: BoxShape.circle, color: colors.secondary.withOpacity(0.2)),
+            ),
+          ),
+          Positioned.fill(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
+              child: Container(color: Colors.transparent),
+            ),
+          ),
+          SafeArea(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             Center(child: jarvisCircle()),
             SizedBox(height: 30),
 
-            // Source & Target pickers in a sleek card
-            Card(
-              elevation: 4,
-              shadowColor: Colors.black45,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                child: Row(children: [
+            // Source & Target pickers in a sleek glass container
+            GlassContainer(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Row(children: [
                   Expanded(
                     child: DropdownButtonHideUnderline(
                       child: DropdownButton<String>(
@@ -806,9 +821,8 @@ class _TransliterateTranslateHomeState
             SizedBox(height: 20),
 
             // Input text
-            Card(
-              elevation: 2,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            GlassContainer(
+              padding: EdgeInsets.zero,
               child: TextField(
                 controller: _controller,
                 minLines: 4,
@@ -885,17 +899,7 @@ class _TransliterateTranslateHomeState
             SizedBox(height: 24),
 
             // Output box (Glassmorphic look)
-            Container(
-              padding: EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                gradient: LinearGradient(
-                  colors: [colors.surface.withOpacity(0.8), colors.surface.withOpacity(0.4)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                border: Border.all(color: Colors.white12, width: 1),
-              ),
+            GlassContainer(
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -912,10 +916,17 @@ class _TransliterateTranslateHomeState
                   ],
                 ),
                 SizedBox(height: 12),
-                SelectableText(
-                  _output.isEmpty ? 'Translation will appear here...' : _output,
-                  style: GoogleFonts.inter(fontSize: 18, color: Colors.white),
-                ),
+                _output.isEmpty
+                    ? Text('Translation will appear here...', style: GoogleFonts.inter(fontSize: 18, color: Colors.white54))
+                    : DefaultTextStyle(
+                        style: GoogleFonts.inter(fontSize: 18, color: Colors.white),
+                        child: AnimatedTextKit(
+                          key: ValueKey(_output),
+                          animatedTexts: [TypewriterAnimatedText(_output, speed: const Duration(milliseconds: 30))],
+                          isRepeatingAnimation: false,
+                          displayFullTextOnTap: true,
+                        ),
+                      ),
               ]),
             ),
             SizedBox(height: 16),
@@ -1004,7 +1015,9 @@ class _TransliterateTranslateHomeState
           ),
           SizedBox(height: 12),
         ]),
+        ),
       ),
+      ],
       ),
     );
   }
