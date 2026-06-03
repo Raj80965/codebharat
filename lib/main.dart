@@ -747,8 +747,11 @@ class _TransliterateTranslateHomeState
         ),
       ),
       body: SafeArea(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 450),
             child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             Center(child: jarvisCircle()),
             SizedBox(height: 30),
@@ -1009,6 +1012,8 @@ class _TransliterateTranslateHomeState
           ),
           SizedBox(height: 12),
         ]),
+        ),
+          ),
         ),
       ),
     );
