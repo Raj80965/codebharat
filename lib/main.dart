@@ -1,6 +1,6 @@
 import 'second_page.dart'; // file ka exact name check karo
 import 'dart:convert';
-import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'ocr_service.dart';
 import 'splash_screen.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
@@ -104,7 +104,7 @@ class _TransliterateTranslateHomeState
   final TextEditingController _controller = TextEditingController();
   final ImagePicker _picker = ImagePicker();
 
-  File? _image;
+  Uint8List? _imageBytes;
   bool _loading = false;
   String _output = '';
   String _detected = '';
@@ -204,7 +204,12 @@ class _TransliterateTranslateHomeState
         });
         return;
       }
-      _image = File(picked.path);
+      _imageBytes = await picked.readAsBytes();
+      if (kIsWeb) {
+        setState(() { _loading = false; });
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Camera/Image text recognition is only available on the mobile app.')));
+        return;
+      }
       final inputImage = InputImage.fromFilePath(picked.path);
       final textRecognizer = TextRecognizer();
       final RecognizedText recognizedText =
@@ -247,9 +252,8 @@ class _TransliterateTranslateHomeState
         });
 
         String? base64Image;
-        if (_image != null) {
-          final bytes = await _image!.readAsBytes();
-          base64Image = base64Encode(bytes);
+        if (_imageBytes != null) {
+          base64Image = base64Encode(_imageBytes!);
         }
 
         await _saveToHistory(HistoryItem(
@@ -402,7 +406,7 @@ class _TransliterateTranslateHomeState
       target: _target,
       timestamp: DateTime.now().toIso8601String(),
       imageBase64:
-          _image != null ? base64Encode(await _image!.readAsBytes()) : null,
+          _imageBytes != null ? base64Encode(_imageBytes!) : null,
     ));
   }
 
@@ -432,9 +436,8 @@ class _TransliterateTranslateHomeState
     });
 
     String? base64Image;
-    if (_image != null) {
-      final bytes = await _image!.readAsBytes();
-      base64Image = base64Encode(bytes);
+    if (_imageBytes != null) {
+      base64Image = base64Encode(_imageBytes!);
     }
 
     await _saveToHistory(HistoryItem(
@@ -622,8 +625,8 @@ class _TransliterateTranslateHomeState
                     _output = selected.output;
                     _source = selected.source;
                     _target = selected.target;
-                    _image = selected.imageBase64 != null
-                        ? File.fromRawPath(base64Decode(selected.imageBase64!))
+                    _imageBytes = selected.imageBase64 != null
+                        ? base64Decode(selected.imageBase64!)
                         : null;
                   });
                 }

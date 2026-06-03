@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:google_mlkit_translation/google_mlkit_translation.dart';
 
 class TranslationService {
@@ -10,8 +10,8 @@ class TranslationService {
   /// Check Internet Connection
   static Future<bool> hasInternet() async {
     try {
-      final result = await InternetAddress.lookup('example.com');
-      return result.isNotEmpty && result[0].rawAddress.isNotEmpty;
+      final resp = await http.get(Uri.parse('https://google.com')).timeout(const Duration(seconds: 3));
+      return resp.statusCode == 200;
     } catch (_) {
       return false;
     }
@@ -57,6 +57,9 @@ class TranslationService {
     }
 
     // ⚙️ Offline Mode (ML Kit) with multiple languages support
+    if (kIsWeb) {
+      return "❌ Offline translation is not supported on the Web.";
+    }
     try {
       // Find source language
       TranslateLanguage sourceLang = TranslateLanguage.values.firstWhere(
