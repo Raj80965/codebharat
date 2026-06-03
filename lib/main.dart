@@ -7,6 +7,7 @@ import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:translator/translator.dart';
 import 'services/translation_service.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
@@ -30,8 +31,14 @@ class CodeBharatApp extends StatelessWidget {
     return MaterialApp(
       title: 'CodeBharat',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorSchemeSeed: Colors.deepPurple,
+      theme: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: const Color(0xFF0F0F1E),
+        colorScheme: const ColorScheme.dark(
+          primary: Colors.cyanAccent,
+          secondary: Colors.deepPurpleAccent,
+          surface: Color(0xFF1E1E30),
+        ),
+        textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
         useMaterial3: true,
       ),
       initialRoute: '/',
@@ -612,11 +619,13 @@ class _TransliterateTranslateHomeState
   // -------------------------- UI --------------------------
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
-        title: Text('CodeBharat — Translate & Transliterate'),
+        title: Text('CodeBharat AI', style: GoogleFonts.poppins(fontWeight: FontWeight.w600, color: colors.primary)),
         centerTitle: true,
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         actions: [
           PopupMenuButton<String>(
             onSelected: (val) async {
@@ -730,231 +739,206 @@ class _TransliterateTranslateHomeState
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(14),
-        child:
-            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          Center(child: jarvisCircle()),
-          SizedBox(height: 20),
-
-          // Source & Target pickers
-          Row(children: [
-            Expanded(
-              child: InputDecorator(
-                decoration: InputDecoration(
-                    labelText: 'Source', border: OutlineInputBorder()),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: _source,
-                    isExpanded: true,
-                    onChanged: (v) => setState(() => _source = v!),
-                    items: _langs
-                        .map((l) => DropdownMenuItem(
-                            value: l['code'], child: Text(l['name']!)))
-                        .toList(),
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(width: 8),
-            IconButton(
-              icon: Icon(Icons.swap_horiz, size: 30),
-              onPressed: () {
-                setState(() {
-                  final t = _source;
-                  _source = _target;
-                  _target = t;
-                });
-              },
-            ),
-            SizedBox(width: 8),
-            Expanded(
-              child: InputDecorator(
-                decoration: InputDecoration(
-                    labelText: 'Target', border: OutlineInputBorder()),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: _target,
-                    isExpanded: true,
-                    onChanged: (v) => setState(() => _target = v!),
-                    items: _langs
-                        .where((l) => l['code'] != 'auto')
-                        .map((l) => DropdownMenuItem(
-                            value: l['code'], child: Text(l['name']!)))
-                        .toList(),
-                  ),
-                ),
-              ),
-            ),
-          ]),
-          SizedBox(height: 12),
-
-          // input text
-          TextField(
-            controller: _controller,
-            minLines: 3,
-            maxLines: 6,
-            decoration: InputDecoration(
-              labelText: 'Enter / paste text (or use camera)',
-              border: OutlineInputBorder(),
-              suffixIcon: IconButton(
-                  icon: Icon(Icons.clear),
-                  onPressed: () => _controller.clear()),
-            ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFF0F0F1E), Color(0xFF1A1A2E)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
           ),
-          SizedBox(height: 10),
+        ),
+        child: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            Center(child: jarvisCircle()),
+            SizedBox(height: 30),
 
-          // Capture/Gallery
-          Row(children: [
-            Expanded(
-              child: ElevatedButton.icon(
-                onPressed: _loading
-                    ? null
-                    : () => _pickImageAndRecognizeText(fromGallery: false),
-                icon: _loading
-                    ? SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(
-                            color: Colors.white, strokeWidth: 2))
-                    : Icon(Icons.camera_alt),
-                label: Text('Capture & OCR'),
-              ),
-            ),
-            SizedBox(width: 8),
-            Expanded(
-              child: ElevatedButton.icon(
-                onPressed: _loading
-                    ? null
-                    : () => _pickImageAndRecognizeText(fromGallery: true),
-                icon: Icon(Icons.photo),
-                label: Text('Gallery'),
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
-              ),
-            ),
-          ]),
-          SizedBox(height: 10),
-
-          // action buttons Translate / Transliterate
-          Row(children: [
-            Expanded(
-              child: // action buttons Translate / Transliterate
-                  Row(children: [
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: _loading ? null : _doAutoDetectAndTranslate,
-                    icon: Icon(Icons.text_fields),
-                    label: Text("Translate"),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFFD1C4E9), // Light Lavender
-                      foregroundColor:
-                          Color(0xFF4A148C), // Text/Icon Dark Purple
-                      elevation: 1,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
+            // Source & Target pickers in a sleek card
+            Card(
+              elevation: 4,
+              shadowColor: Colors.black45,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                child: Row(children: [
+                  Expanded(
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        value: _source,
+                        isExpanded: true,
+                        icon: Icon(Icons.keyboard_arrow_down, color: colors.primary),
+                        onChanged: (v) => setState(() => _source = v!),
+                        items: _langs
+                            .map((l) => DropdownMenuItem(
+                                value: l['code'], child: Text(l['name']!, style: TextStyle(fontWeight: FontWeight.w500))))
+                            .toList(),
+                      ),
                     ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.swap_horiz, size: 28, color: colors.secondary),
+                    onPressed: () {
+                      setState(() {
+                        final t = _source;
+                        _source = _target;
+                        _target = t;
+                      });
+                    },
+                  ),
+                  Expanded(
+                    child: DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        value: _target,
+                        isExpanded: true,
+                        icon: Icon(Icons.keyboard_arrow_down, color: colors.primary),
+                        onChanged: (v) => setState(() => _target = v!),
+                        items: _langs
+                            .where((l) => l['code'] != 'auto')
+                            .map((l) => DropdownMenuItem(
+                                value: l['code'], child: Text(l['name']!, style: TextStyle(fontWeight: FontWeight.w500))))
+                            .toList(),
+                      ),
+                    ),
+                  ),
+                ]),
+              ),
+            ),
+            SizedBox(height: 20),
+
+            // Input text
+            Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              child: TextField(
+                controller: _controller,
+                minLines: 4,
+                maxLines: 6,
+                style: TextStyle(fontSize: 16),
+                decoration: InputDecoration(
+                  hintText: 'Enter text, paste, or use camera...',
+                  hintStyle: TextStyle(color: Colors.white38),
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.all(16),
+                  suffixIcon: IconButton(
+                      icon: Icon(Icons.close, color: Colors.white54),
+                      onPressed: () => _controller.clear()),
+                ),
+              ),
+            ),
+            SizedBox(height: 12),
+
+            // Sleek Action Row (Camera & Mic)
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              IconButton(
+                onPressed: _loading ? null : () => _pickImageAndRecognizeText(fromGallery: false),
+                icon: Icon(Icons.camera_alt_outlined, color: colors.primary),
+                tooltip: 'Capture & OCR',
+                style: IconButton.styleFrom(backgroundColor: colors.surface),
+              ),
+              SizedBox(width: 12),
+              IconButton(
+                onPressed: _loading ? null : () => _pickImageAndRecognizeText(fromGallery: true),
+                icon: Icon(Icons.photo_library_outlined, color: colors.secondary),
+                tooltip: 'Gallery',
+                style: IconButton.styleFrom(backgroundColor: colors.surface),
+              ),
+              SizedBox(width: 12),
+              IconButton(
+                onPressed: speakAndTranslate,
+                icon: Icon(Icons.mic_none_outlined, color: Colors.purpleAccent),
+                tooltip: 'Speak & Translate',
+                style: IconButton.styleFrom(backgroundColor: colors.surface),
+              ),
+            ]),
+            SizedBox(height: 20),
+
+            // Primary Translate / Transliterate Buttons
+            Row(children: [
+              Expanded(
+                child: FilledButton.icon(
+                  onPressed: _loading ? null : _doAutoDetectAndTranslate,
+                  icon: Icon(Icons.g_translate),
+                  label: Text("Translate", style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+                  style: FilledButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    backgroundColor: colors.primary.withOpacity(0.15),
+                    foregroundColor: colors.primary,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                 ),
-                SizedBox(width: 8),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: _loading ? null : _doTransliterate,
-                    icon: Icon(Icons.text_fields),
-                    label: Text("Transliterate"),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFFB2DFDB), // 🩵 Soft Mint Green
-                      foregroundColor: Color(0xFF004D40), // Text/Icon Dark Teal
-                      elevation: 1,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
-                    ),
+              ),
+              SizedBox(width: 12),
+              Expanded(
+                child: FilledButton.icon(
+                  onPressed: _loading ? null : _doTransliterate,
+                  icon: Icon(Icons.language),
+                  label: Text("Transliterate", style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+                  style: FilledButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    backgroundColor: colors.secondary.withOpacity(0.15),
+                    foregroundColor: colors.secondary,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
+                ),
+              ),
+            ]),
+            SizedBox(height: 24),
+
+            // Output box (Glassmorphic look)
+            Container(
+              padding: EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                gradient: LinearGradient(
+                  colors: [colors.surface.withOpacity(0.8), colors.surface.withOpacity(0.4)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                border: Border.all(color: Colors.white12, width: 1),
+              ),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Output', style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: Colors.white54)),
+                    if (_loading)
+                      SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: colors.primary)),
+                    if (_detected.isNotEmpty)
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(color: colors.primary.withOpacity(0.2), borderRadius: BorderRadius.circular(8)),
+                        child: Text('Detected: $_detected', style: TextStyle(color: colors.primary, fontSize: 12)),
+                      ),
+                  ],
+                ),
+                SizedBox(height: 12),
+                SelectableText(
+                  _output.isEmpty ? 'Translation will appear here...' : _output,
+                  style: GoogleFonts.inter(fontSize: 18, color: Colors.white),
                 ),
               ]),
             ),
-          ]),
-          SizedBox(height: 14),
-
-          // output box
-          Container(
-            padding: EdgeInsets.all(12),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: Colors.deepPurple.shade50),
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Wrap(
-                crossAxisAlignment: WrapCrossAlignment.center,
-                spacing: 8,
-                runSpacing: 4,
-                children: [
-                  Text('Output:',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  if (_detected.isNotEmpty)
-                    Chip(label: Text('Detected: $_detected')),
-                  if (_loading)
-                    SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator()),
-                ],
-              ),
-              SizedBox(height: 8),
-              SelectableText(
-                  _output.isEmpty ? 'Result will appear here...' : _output,
-                  style: TextStyle(fontSize: 16)),
-            ]),
-          ),
-          SizedBox(height: 12),
+            SizedBox(height: 16),
 
           // copy/share/speak
-          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            ElevatedButton.icon(
-                onPressed: _output.isEmpty ? null : _doCopy,
-                icon: Icon(Icons.copy),
-                label: Text('Copy')),
-            SizedBox(width: 8),
-            ElevatedButton.icon(
-                onPressed: _output.isEmpty ? null : _doShare,
-                icon: Icon(Icons.share),
-                label: Text('Share')),
-            SizedBox(width: 8),
-            ElevatedButton.icon(
-                onPressed: _output.isEmpty ? null : _doSpeak,
-                icon: Icon(Icons.volume_up),
-                label: Text('Speak')),
-          ]),
-          Row(
-            children: [
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: speakAndTranslate,
-                  icon: Icon(Icons.mic, color: Colors.white),
-                  label: Text("Speak & Translate"),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepPurple,
-                    foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(vertical: 14),
-                  ),
-                ),
-              ),
+            Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+              TextButton.icon(
+                  onPressed: _output.isEmpty ? null : _doCopy,
+                  icon: Icon(Icons.copy_rounded, size: 20),
+                  label: Text('Copy')),
               SizedBox(width: 8),
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: speakAndTransliterate,
-                  icon: Icon(Icons.record_voice_over, color: Colors.white),
-                  label: Text("Speak & Transliterate"),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal,
-                    foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(vertical: 14),
-                  ),
-                ),
-              ),
-            ],
-          ),
+              TextButton.icon(
+                  onPressed: _output.isEmpty ? null : _doShare,
+                  icon: Icon(Icons.share_rounded, size: 20),
+                  label: Text('Share')),
+              SizedBox(width: 8),
+              TextButton.icon(
+                  onPressed: _output.isEmpty ? null : _doSpeak,
+                  icon: Icon(Icons.volume_up_rounded, size: 20),
+                  label: Text('Speak')),
+            ]),
 
-          SizedBox(height: 12),
+            SizedBox(height: 24),
 
           if (_imageBytes != null) ...[
             Divider(),
