@@ -1005,6 +1005,7 @@ class _TransliterateTranslateHomeState
           SizedBox(height: 12),
         ]),
       ),
+      ),
     );
   }
 }
