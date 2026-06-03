@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "279492727558",
+    "project_id": "codebharat-c7242",
+    "storage_bucket": "codebharat-c7242.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:279492727558:android:94dbdeb2ce33362973c487",
+        "android_client_info": {
+          "package_name": "com.codebharat.translator"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmwY5srcYfY64fU5s7B34QsHQPLC5V5LE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

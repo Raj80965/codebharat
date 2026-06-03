@@ -1,0 +1,49 @@
+name: codebharat
+description: A smart Indian Transliteration and Translation App
+publish_to: "none"
+version: 1.0.0+2
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  android_intent_plus: ^4.0.3
+  url_launcher: ^6.3.0
+  provider: ^6.1.2
+  share_plus: ^7.2.2
+
+  http: ^1.2.0
+  shared_preferences: ^2.3.2
+  connectivity_plus: ^4.0.2
+
+  introduction_screen: ^3.1.17
+
+  camera: ^0.10.6
+  image_picker: ^1.0.0
+
+  # ---- ML Kit (Latest Compatible Versions) ----
+  google_mlkit_commons: ^0.11.0
+  google_mlkit_text_recognition: ^0.15.0
+  google_mlkit_language_id: ^0.13.0
+  google_mlkit_translation: ^0.13.0
+
+  # ---- Audio & Speech ----
+  audioplayers: ^5.2.0
+  flutter_tts: ^3.6.3
+  speech_to_text: ^7.3.0
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/icon/logo.jpeg
+    - assets/icon/india.jpeg
