@@ -628,6 +628,8 @@ class _TransliterateTranslateHomeState
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     return Scaffold(
+      extendBodyBehindAppBar: true,
+      backgroundColor: const Color(0xFF000000), // Pure Black for ambient glow to pop
       appBar: AppBar(
         title: Text('CodeBharat AI', style: GoogleFonts.poppins(fontWeight: FontWeight.w600, color: colors.primary)),
         centerTitle: true,
@@ -746,7 +748,40 @@ class _TransliterateTranslateHomeState
           ),
         ),
       ),
-      body: SafeArea(
+      body: Stack(
+        children: [
+          // Ambient Glow
+          Positioned(
+            top: -100,
+            left: -100,
+            child: Container(
+              width: 300,
+              height: 300,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: colors.primary.withOpacity(0.15),
+                boxShadow: [
+                  BoxShadow(color: colors.primary.withOpacity(0.2), blurRadius: 100, spreadRadius: 100),
+                ],
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: -50,
+            right: -50,
+            child: Container(
+              width: 250,
+              height: 250,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: colors.secondary.withOpacity(0.15),
+                boxShadow: [
+                  BoxShadow(color: colors.secondary.withOpacity(0.2), blurRadius: 100, spreadRadius: 100),
+                ],
+              ),
+            ),
+          ),
+          SafeArea(
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 450),
@@ -875,15 +910,14 @@ class _TransliterateTranslateHomeState
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(colors: [const Color(0xFF334155), const Color(0xFF1E293B)]),
+                    gradient: const LinearGradient(colors: [Colors.deepPurpleAccent, Colors.pinkAccent]),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFF475569), width: 1),
-                    boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.4), blurRadius: 10, offset: const Offset(0, 4))],
+                    boxShadow: [BoxShadow(color: Colors.deepPurpleAccent.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 4))],
                   ),
                   child: ElevatedButton.icon(
                     onPressed: _loading ? null : _doTransliterate,
-                    icon: const Icon(Icons.language, color: Colors.white70),
-                    label: Text("Transliterate", style: GoogleFonts.poppins(fontWeight: FontWeight.w600, color: Colors.white70)),
+                    icon: const Icon(Icons.language, color: Colors.white),
+                    label: Text("Transliterate", style: GoogleFonts.poppins(fontWeight: FontWeight.w600, color: Colors.white)),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       backgroundColor: Colors.transparent,
@@ -1016,6 +1050,8 @@ class _TransliterateTranslateHomeState
         ),
           ),
         ),
+          ),
+        ],
       ),
     );
   }
