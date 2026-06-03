@@ -35,11 +35,11 @@ class CodeBharatApp extends StatelessWidget {
       title: 'CodeBharat',
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: const Color(0xFF09090B), // Obsidian Black
+        scaffoldBackgroundColor: const Color(0xFF0B1120), // Deep Navy
         colorScheme: const ColorScheme.dark(
-          primary: Color(0xFF4F46E5), // Electric Indigo
-          secondary: Color(0xFF0EA5E9), // Deep Sky Blue
-          surface: Color(0xFF18181B), // Zinc-900 Surface
+          primary: Color(0xFF06B6D4), // Cyan
+          secondary: Color(0xFF3B82F6), // Royal Blue
+          surface: Color(0xFF1E293B), // Slate Blue Surface
         ),
         textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme).apply(
           bodyColor: Colors.white,
@@ -515,10 +515,10 @@ class _TransliterateTranslateHomeState
         ],
         gradient: RadialGradient(
           colors: isJarvisListening
-              ? [colors.secondary, const Color(0xFF09090B)]
+              ? [colors.secondary, const Color(0xFF0B1120)]
               : isJarvisSpeaking
-                  ? [colors.primary, const Color(0xFF09090B)]
-                  : [colors.primary.withOpacity(0.3), const Color(0xFF09090B)],
+                  ? [colors.primary, const Color(0xFF0B1120)]
+                  : [colors.primary.withOpacity(0.3), const Color(0xFF0B1120)],
         ),
       ),
       child: Center(
@@ -875,9 +875,9 @@ class _TransliterateTranslateHomeState
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(colors: [const Color(0xFF27272A), const Color(0xFF18181B)]),
+                    gradient: LinearGradient(colors: [const Color(0xFF334155), const Color(0xFF1E293B)]),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFF3F3F46), width: 1),
+                    border: Border.all(color: const Color(0xFF475569), width: 1),
                     boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.4), blurRadius: 10, offset: const Offset(0, 4))],
                   ),
                   child: ElevatedButton.icon(

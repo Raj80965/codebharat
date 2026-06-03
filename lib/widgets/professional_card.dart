@@ -19,13 +19,13 @@ class ProfessionalCard extends StatelessWidget {
     return Container(
       padding: padding,
       decoration: BoxDecoration(
-        color: backgroundColor ?? const Color(0xFF18181B), // Zinc-900
+        color: backgroundColor ?? const Color(0xFF1E293B), // Soft Slate Blue
         borderRadius: BorderRadius.circular(borderRadius),
-        border: Border.all(color: const Color(0xFF27272A), width: 1), // Zinc-800 crisp border
+        border: Border.all(color: const Color(0xFF334155), width: 1.5), // Slate border
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.5),
-            blurRadius: 10,
+            color: const Color(0xFF06B6D4).withOpacity(0.08), // Subtle cyan glow
+            blurRadius: 12,
             offset: const Offset(0, 4),
           )
         ],
