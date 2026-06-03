@@ -1,34 +1,20 @@
-import 'second_page.dart'; // file ka exact name check karo
-import 'dart:convert';
-import 'package:flutter/foundation.dart';
-import 'ocr_service.dart';
-import 'splash_screen.dart';
-import 'package:speech_to_text/speech_to_text.dart' as stt;
-import 'package:translator/translator.dart';
-import 'services/translation_service.dart';
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart' as http;
-import 'package:image_picker/image_picker.dart';
-import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
-import 'package:animated_text_kit/animated_text_kit.dart';
-import 'dart:ui';
-import 'widgets/professional_card.dart';
-import 'package:flutter_tts/flutter_tts.dart';
-import 'package:share_plus/share_plus.dart';
-import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'pages/login_page.dart'; // Added for authentication
-import 'services/auth_service.dart';
+import re
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  // Initialize AuthService
-  await AuthService.init();
-  runApp(CodeBharatApp());
-}
+with open('lib/main.dart', 'r', encoding='utf-8') as f:
+    content = f.read()
 
-class CodeBharatApp extends StatelessWidget {
+# We want to refactor the build method to use helper methods
+# Let's find the start of `Widget build(BuildContext context) {`
+build_start = content.find('  @override\n  Widget build(BuildContext context) {')
+
+# Find the end of `_TransliterateTranslateHomeState` class
+class_end = content.rfind('}', 0, content.find('class HistoryScreen extends StatefulWidget {'))
+
+# Extract everything before build
+before_build = content[:build_start]
+
+# We need to extract the UI pieces and put them in helper methods, but we can also just write the helper methods and the new build method.
+helpers = """
   // -------------------------- UI Helpers --------------------------
 
   Widget _buildLanguagePickers(ColorScheme colors) {
@@ -44,9 +30,7 @@ class CodeBharatApp extends StatelessWidget {
               onChanged: (v) => setState(() => _source = v!),
               items: _langs
                   .map((l) => DropdownMenuItem(
-                      value: l['code'],
-                      child: Text(l['name']!,
-                          style: TextStyle(fontWeight: FontWeight.w500))))
+                      value: l['code'], child: Text(l['name']!, style: TextStyle(fontWeight: FontWeight.w500))))
                   .toList(),
             ),
           ),
@@ -71,9 +55,7 @@ class CodeBharatApp extends StatelessWidget {
               items: _langs
                   .where((l) => l['code'] != 'auto')
                   .map((l) => DropdownMenuItem(
-                      value: l['code'],
-                      child: Text(l['name']!,
-                          style: TextStyle(fontWeight: FontWeight.w500))))
+                      value: l['code'], child: Text(l['name']!, style: TextStyle(fontWeight: FontWeight.w500))))
                   .toList(),
             ),
           ),
@@ -106,18 +88,14 @@ class CodeBharatApp extends StatelessWidget {
   Widget _buildMediaActions(ColorScheme colors) {
     return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
       IconButton(
-        onPressed: _loading
-            ? null
-            : () => _pickImageAndRecognizeText(fromGallery: false),
+        onPressed: _loading ? null : () => _pickImageAndRecognizeText(fromGallery: false),
         icon: Icon(Icons.camera_alt_outlined, color: colors.primary),
         tooltip: 'Capture & OCR',
         style: IconButton.styleFrom(backgroundColor: colors.surface),
       ),
       SizedBox(width: 12),
       IconButton(
-        onPressed: _loading
-            ? null
-            : () => _pickImageAndRecognizeText(fromGallery: true),
+        onPressed: _loading ? null : () => _pickImageAndRecognizeText(fromGallery: true),
         icon: Icon(Icons.photo_library_outlined, color: colors.secondary),
         tooltip: 'Gallery',
         style: IconButton.styleFrom(backgroundColor: colors.surface),
@@ -137,28 +115,19 @@ class CodeBharatApp extends StatelessWidget {
       Expanded(
         child: Container(
           decoration: BoxDecoration(
-            gradient:
-                LinearGradient(colors: [colors.primary, colors.secondary]),
+            gradient: LinearGradient(colors: [colors.primary, colors.secondary]),
             borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                  color: colors.primary.withOpacity(0.3),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4))
-            ],
+            boxShadow: [BoxShadow(color: colors.primary.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 4))],
           ),
           child: ElevatedButton.icon(
             onPressed: _loading ? null : _doAutoDetectAndTranslate,
             icon: const Icon(Icons.g_translate, color: Colors.white),
-            label: Text("Translate",
-                style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.w600, color: Colors.white)),
+            label: Text("Translate", style: GoogleFonts.poppins(fontWeight: FontWeight.w600, color: Colors.white)),
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
               backgroundColor: Colors.transparent,
               shadowColor: Colors.transparent,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
           ),
         ),
@@ -167,28 +136,19 @@ class CodeBharatApp extends StatelessWidget {
       Expanded(
         child: Container(
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
-                colors: [Colors.deepPurpleAccent, Colors.pinkAccent]),
+            gradient: const LinearGradient(colors: [Colors.deepPurpleAccent, Colors.pinkAccent]),
             borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                  color: Colors.deepPurpleAccent.withOpacity(0.3),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4))
-            ],
+            boxShadow: [BoxShadow(color: Colors.deepPurpleAccent.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 4))],
           ),
           child: ElevatedButton.icon(
             onPressed: _loading ? null : _doTransliterate,
             icon: const Icon(Icons.language, color: Colors.white),
-            label: Text("Transliterate",
-                style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.w600, color: Colors.white)),
+            label: Text("Transliterate", style: GoogleFonts.poppins(fontWeight: FontWeight.w600, color: Colors.white)),
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
               backgroundColor: Colors.transparent,
               shadowColor: Colors.transparent,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
           ),
         ),
@@ -202,38 +162,25 @@ class CodeBharatApp extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('Output',
-                style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.bold, color: Colors.white54)),
+            Text('Output', style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: Colors.white54)),
             if (_loading)
-              SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(
-                      strokeWidth: 2, color: colors.primary)),
+              SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: colors.primary)),
             if (_detected.isNotEmpty)
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                    color: colors.primary.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(8)),
-                child: Text('Detected: $_detected',
-                    style: TextStyle(color: colors.primary, fontSize: 12)),
+                decoration: BoxDecoration(color: colors.primary.withOpacity(0.2), borderRadius: BorderRadius.circular(8)),
+                child: Text('Detected: $_detected', style: TextStyle(color: colors.primary, fontSize: 12)),
               ),
           ],
         ),
         SizedBox(height: 12),
         _output.isEmpty
-            ? Text('Translation will appear here...',
-                style: GoogleFonts.inter(fontSize: 18, color: Colors.white54))
+            ? Text('Translation will appear here...', style: GoogleFonts.inter(fontSize: 18, color: Colors.white54))
             : DefaultTextStyle(
                 style: GoogleFonts.inter(fontSize: 18, color: Colors.white),
                 child: AnimatedTextKit(
                   key: ValueKey(_output),
-                  animatedTexts: [
-                    TypewriterAnimatedText(_output,
-                        speed: const Duration(milliseconds: 30))
-                  ],
+                  animatedTexts: [TypewriterAnimatedText(_output, speed: const Duration(milliseconds: 30))],
                   isRepeatingAnimation: false,
                   displayFullTextOnTap: true,
                 ),
@@ -264,12 +211,9 @@ class CodeBharatApp extends StatelessWidget {
       children: [
         if (_imageBytes != null) ...[
           Divider(),
-          Text('Captured image:',
-              style: TextStyle(fontWeight: FontWeight.bold)),
+          Text('Captured image:', style: TextStyle(fontWeight: FontWeight.bold)),
           SizedBox(height: 8),
-          ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.memory(_imageBytes!)),
+          ClipRRect(borderRadius: BorderRadius.circular(8), child: Image.memory(_imageBytes!)),
           SizedBox(height: 20),
         ],
         Center(
@@ -325,12 +269,9 @@ class CodeBharatApp extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     return Scaffold(
       extendBodyBehindAppBar: true,
-      backgroundColor:
-          const Color(0xFF000000), // Pure Black for ambient glow to pop
+      backgroundColor: const Color(0xFF000000), // Pure Black for ambient glow to pop
       appBar: AppBar(
-        title: Text('CodeBharat AI',
-            style: GoogleFonts.poppins(
-                fontWeight: FontWeight.w600, color: colors.primary)),
+        title: Text('CodeBharat AI', style: GoogleFonts.poppins(fontWeight: FontWeight.w600, color: colors.primary)),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -354,8 +295,7 @@ class CodeBharatApp extends StatelessWidget {
             },
             itemBuilder: (c) => [
               PopupMenuItem(value: 'history', child: Text('View History')),
-              PopupMenuItem(
-                  value: 'clear_image', child: Text('Clear Captured Image')),
+              PopupMenuItem(value: 'clear_image', child: Text('Clear Captured Image')),
             ],
           )
         ],
@@ -366,8 +306,7 @@ class CodeBharatApp extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Text('Translation History',
-                    style: Theme.of(context).textTheme.titleLarge),
+                child: Text('Translation History', style: Theme.of(context).textTheme.titleLarge),
               ),
               Expanded(
                 child: _history.isEmpty
@@ -377,12 +316,9 @@ class CodeBharatApp extends StatelessWidget {
                         itemBuilder: (c, i) {
                           final h = _history[i];
                           return ListTile(
-                            title: Text(h.input,
-                                maxLines: 1, overflow: TextOverflow.ellipsis),
-                            subtitle: Text(
-                                '${h.sourceLang} → ${h.targetLang}\n${h.output}',
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis),
+                            title: Text(h.input, maxLines: 1, overflow: TextOverflow.ellipsis),
+                            subtitle: Text('${h.sourceLang} → ${h.targetLang}\\n${h.output}',
+                                maxLines: 2, overflow: TextOverflow.ellipsis),
                             isThreeLine: true,
                             onTap: () {
                               setState(() {
@@ -396,11 +332,8 @@ class CodeBharatApp extends StatelessWidget {
                             trailing: IconButton(
                               icon: Icon(Icons.copy),
                               onPressed: () {
-                                Clipboard.setData(
-                                    ClipboardData(text: h.output));
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                        content: Text('Copied history item')));
+                                Clipboard.setData(ClipboardData(text: h.output));
+                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Copied history item')));
                               },
                             ),
                           );
@@ -413,8 +346,7 @@ class CodeBharatApp extends StatelessWidget {
                     onPressed: _clearHistory,
                     icon: Icon(Icons.delete),
                     label: Text('Clear History'),
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.redAccent)),
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent)),
               )
             ],
           ),
@@ -433,10 +365,7 @@ class CodeBharatApp extends StatelessWidget {
                 shape: BoxShape.circle,
                 color: colors.primary.withOpacity(0.15),
                 boxShadow: [
-                  BoxShadow(
-                      color: colors.primary.withOpacity(0.2),
-                      blurRadius: 100,
-                      spreadRadius: 100),
+                  BoxShadow(color: colors.primary.withOpacity(0.2), blurRadius: 100, spreadRadius: 100),
                 ],
               ),
             ),
@@ -451,10 +380,7 @@ class CodeBharatApp extends StatelessWidget {
                 shape: BoxShape.circle,
                 color: colors.secondary.withOpacity(0.15),
                 boxShadow: [
-                  BoxShadow(
-                      color: colors.secondary.withOpacity(0.2),
-                      blurRadius: 100,
-                      spreadRadius: 100),
+                  BoxShadow(color: colors.secondary.withOpacity(0.2), blurRadius: 100, spreadRadius: 100),
                 ],
               ),
             ),
@@ -469,8 +395,7 @@ class CodeBharatApp extends StatelessWidget {
                   return ConstrainedBox(
                     constraints: BoxConstraints(maxWidth: maxContainerWidth),
                     child: SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 20),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                       child: isDesktop
                           // ---------------- DESKTOP LAYOUT (Side-by-Side) ----------------
                           ? Row(
@@ -480,8 +405,7 @@ class CodeBharatApp extends StatelessWidget {
                                 Expanded(
                                   flex: 4,
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.stretch,
+                                    crossAxisAlignment: CrossAxisAlignment.stretch,
                                     children: [
                                       SizedBox(height: 20),
                                       Center(child: jarvisCircle()),
@@ -499,8 +423,7 @@ class CodeBharatApp extends StatelessWidget {
                                 Expanded(
                                   flex: 6,
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.stretch,
+                                    crossAxisAlignment: CrossAxisAlignment.stretch,
                                     children: [
                                       _buildInputBox(),
                                       SizedBox(height: 12),
@@ -541,104 +464,9 @@ class CodeBharatApp extends StatelessWidget {
       ),
     );
   }
-}
+"""
 
-// ---------------- history screen ----------------
-class HistoryScreen extends StatefulWidget {
-  final List<HistoryItem> history;
-  final Future<void> Function() onClear;
+after_class = content[class_end:]
 
-  const HistoryScreen({required this.history, required this.onClear});
-
-  @override
-  _HistoryScreenState createState() => _HistoryScreenState();
-}
-
-class _HistoryScreenState extends State<HistoryScreen> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('History'),
-        actions: [
-          IconButton(
-            onPressed: () async {
-              await widget.onClear();
-              setState(() {});
-            },
-            icon: Icon(Icons.delete),
-          ),
-        ],
-      ),
-      body: widget.history.isEmpty
-          ? Center(child: Text('No history yet'))
-          : ListView.builder(
-              itemCount: widget.history.length,
-              itemBuilder: (_, i) {
-                final h = widget.history[i];
-                return Card(
-                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  child: ListTile(
-                    leading: h.imageBase64 != null
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(6),
-                            child: Image.memory(
-                              base64Decode(h.imageBase64!),
-                              width: 50,
-                              height: 50,
-                              fit: BoxFit.cover,
-                            ),
-                          )
-                        : Icon(Icons.history, color: Colors.deepPurple),
-                    title: Text(
-                      h.output,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    subtitle: Text(
-                      '${h.action} • ${h.source}→${h.target}\n${DateTime.tryParse(h.timestamp)?.toLocal().toString().split(".").first ?? h.timestamp}',
-                      style: TextStyle(fontSize: 12),
-                    ),
-                    isThreeLine: true,
-                    trailing: PopupMenuButton<String>(
-                      onSelected: (v) async {
-                        if (v == 'copy') {
-                          await Clipboard.setData(
-                              ClipboardData(text: h.output));
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Copied ✅')));
-                        } else if (v == 'share') {
-                          await Share.share(h.output);
-                        } else if (v == 'view_image' && h.imageBase64 != null) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => Scaffold(
-                                appBar: AppBar(title: Text('Captured Image')),
-                                body: Center(
-                                  child: Image.memory(
-                                      base64Decode(h.imageBase64!)),
-                                ),
-                              ),
-                            ),
-                          );
-                        }
-                      },
-                      itemBuilder: (_) => [
-                        PopupMenuItem(value: 'copy', child: Text('Copy')),
-                        PopupMenuItem(value: 'share', child: Text('Share')),
-                        if (h.imageBase64 != null)
-                          PopupMenuItem(
-                              value: 'view_image', child: Text('View Image')),
-                      ],
-                    ),
-                    onTap: () {
-                      Navigator.pop(context, h);
-                    },
-                  ),
-                );
-              },
-            ),
-    );
-  }
-}
+with open('lib/main.dart', 'w', encoding='utf-8') as f:
+    f.write(before_build + helpers + after_class)
