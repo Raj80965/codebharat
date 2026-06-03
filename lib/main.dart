@@ -36,7 +36,6 @@ class CodeBharatApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => SplashScreen(),
-        '/login': (context) => LoginPage(),
         '/home': (context) => TransliterateTranslateHome(),
       },
     );
