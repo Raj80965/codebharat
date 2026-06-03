@@ -1,11 +1,10 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:translator/translator.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_mlkit_translation/google_mlkit_translation.dart';
+import 'package:http/http.dart' as http;
 
 class TranslationService {
-  static const _libreBase = "https://translate.argosopentech.com";
-  static const _memoryBase = "https://api.mymemory.translated.net/get";
+  static final _translator = GoogleTranslator();
 
   /// Check Internet Connection
   static Future<bool> hasInternet() async {
@@ -19,61 +18,37 @@ class TranslationService {
   }
 
   /// Translate Text (Online + Offline)
-  /// source & target are BCP-47 codes, e.g., "en", "hi", "fr", "es"
   static Future<String> translateText(
       String text, String source, String target) async {
     if (text.trim().isEmpty) return "⚠️ Please enter text";
 
     bool online = await hasInternet();
 
-    // 🌐 Online Mode
+    // 🌐 Online Mode (Flawless Google Translate)
     if (online) {
       try {
-        final rawUri = "$_libreBase/translate";
-        final uri = Uri.parse(kIsWeb
-            ? 'https://corsproxy.io/?${Uri.encodeComponent(rawUri)}'
-            : rawUri);
-        final resp = await http.post(uri,
-            headers: {"Content-Type": "application/json"},
-            body: jsonEncode({
-              "q": text,
-              "source": source == "auto" ? "auto" : source,
-              "target": target,
-              "format": "text"
-            }));
-        if (resp.statusCode == 200) {
-          final data = jsonDecode(resp.body);
-          if (data["translatedText"] != null) return data["translatedText"];
-        }
-
-        // Backup API
-        final rawBackupUri = "$_memoryBase?q=$text&langpair=$source|$target";
-        final backupUri = Uri.parse(kIsWeb
-            ? 'https://corsproxy.io/?${Uri.encodeComponent(rawBackupUri)}'
-            : rawBackupUri);
-        final backupResp = await http.get(backupUri);
-        if (backupResp.statusCode == 200) {
-          final backupData = jsonDecode(backupResp.body);
-          return backupData["responseData"]["translatedText"] ??
-              "⚠️ No translation found";
-        }
+        final translation = await _translator.translate(
+          text,
+          from: source == "auto" ? "auto" : source,
+          to: target,
+        );
+        return translation.text;
       } catch (e) {
         print("Online translation failed: $e");
+        if (kIsWeb) return "❌ Translation failed: $e";
       }
     }
 
-    // ⚙️ Offline Mode (ML Kit) with multiple languages support
+    // ⚙️ Offline Mode (ML Kit)
     if (kIsWeb) {
       return "❌ Offline translation is not supported on the Web.";
     }
     try {
-      // Find source language
       TranslateLanguage sourceLang = TranslateLanguage.values.firstWhere(
         (lang) => lang.bcpCode == source,
         orElse: () => TranslateLanguage.english,
       );
 
-      // Find target language
       TranslateLanguage targetLang = TranslateLanguage.values.firstWhere(
         (lang) => lang.bcpCode == target,
         orElse: () => TranslateLanguage.hindi,

@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'ocr_service.dart';
 import 'splash_screen.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:translator/translator.dart';
 import 'services/translation_service.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -278,9 +279,13 @@ class _TransliterateTranslateHomeState
   // -------------------------- LibreTranslate detect --------------------------
   // -------------------------- Reliable Translate + Detect (Auto Fallback) --------------------------
   Future<String> _detectLanguage(String text) async {
-    final result = await TranslationService.translateText(text, 'auto', 'hi');
-
-    return result;
+    try {
+      final translator = GoogleTranslator();
+      final translation = await translator.translate(text, from: 'auto', to: 'en');
+      return translation.sourceLanguage.code;
+    } catch (_) {
+      return 'en';
+    }
   }
 
   Future<String> _translateText(
