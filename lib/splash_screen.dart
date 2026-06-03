@@ -57,7 +57,7 @@ class _SplashScreenState extends State<SplashScreen>
     if (!mounted) return;
     // Always navigate to login page first
     // User needs to explicitly log in even if they have registered
-    Navigator.pushReplacementNamed(context, '/login');
+    Navigator.pushReplacementNamed(context, '/home');
   }
 
   @override
