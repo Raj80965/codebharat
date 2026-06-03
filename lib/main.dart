@@ -316,8 +316,11 @@ class _TransliterateTranslateHomeState
     try {
       final itc = '$targetLang-t-i0-und';
       final encoded = Uri.encodeComponent(text);
-      final url = Uri.parse(
-          'https://inputtools.google.com/request?text=$encoded&itc=$itc&num=5&cp=0&cs=1&ie=utf-8&oe=utf-8');
+      final rawUrl =
+          'https://inputtools.google.com/request?text=$encoded&itc=$itc&num=5&cp=0&cs=1&ie=utf-8&oe=utf-8';
+      final url = Uri.parse(kIsWeb
+          ? 'https://corsproxy.io/?${Uri.encodeComponent(rawUrl)}'
+          : rawUrl);
 
       final resp = await http.get(url);
       if (resp.statusCode != 200)

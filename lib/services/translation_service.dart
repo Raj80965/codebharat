@@ -9,6 +9,7 @@ class TranslationService {
 
   /// Check Internet Connection
   static Future<bool> hasInternet() async {
+    if (kIsWeb) return true;
     try {
       final resp = await http.get(Uri.parse('https://google.com')).timeout(const Duration(seconds: 3));
       return resp.statusCode == 200;
@@ -28,7 +29,10 @@ class TranslationService {
     // 🌐 Online Mode
     if (online) {
       try {
-        final uri = Uri.parse("$_libreBase/translate");
+        final rawUri = "$_libreBase/translate";
+        final uri = Uri.parse(kIsWeb
+            ? 'https://corsproxy.io/?${Uri.encodeComponent(rawUri)}'
+            : rawUri);
         final resp = await http.post(uri,
             headers: {"Content-Type": "application/json"},
             body: jsonEncode({
@@ -43,8 +47,10 @@ class TranslationService {
         }
 
         // Backup API
-        final backupUri =
-            Uri.parse("$_memoryBase?q=$text&langpair=$source|$target");
+        final rawBackupUri = "$_memoryBase?q=$text&langpair=$source|$target";
+        final backupUri = Uri.parse(kIsWeb
+            ? 'https://corsproxy.io/?${Uri.encodeComponent(rawBackupUri)}'
+            : rawBackupUri);
         final backupResp = await http.get(backupUri);
         if (backupResp.statusCode == 200) {
           final backupData = jsonDecode(backupResp.body);
