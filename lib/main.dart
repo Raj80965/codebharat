@@ -13,7 +13,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'dart:ui';
-import 'widgets/glass_container.dart';
+import 'widgets/professional_card.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter/services.dart';
@@ -35,13 +35,16 @@ class CodeBharatApp extends StatelessWidget {
       title: 'CodeBharat',
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: const Color(0xFF0F0F1E),
+        scaffoldBackgroundColor: const Color(0xFF0F172A), // Midnight Slate
         colorScheme: const ColorScheme.dark(
-          primary: Colors.cyanAccent,
-          secondary: Colors.deepPurpleAccent,
-          surface: Color(0xFF1E1E30),
+          primary: Color(0xFF6366F1), // Enterprise Indigo
+          secondary: Color(0xFF38BDF8), // Light Blue Accent
+          surface: Color(0xFF1E293B), // Slate Blue Surface
         ),
-        textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
+        textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme).apply(
+          bodyColor: Colors.white,
+          displayColor: Colors.white,
+        ),
         useMaterial3: true,
       ),
       initialRoute: '/',
@@ -492,29 +495,30 @@ class _TransliterateTranslateHomeState
   }
 
   Widget jarvisCircle() {
+    final colors = Theme.of(context).colorScheme;
     return AnimatedContainer(
       duration: Duration(milliseconds: 300),
-      height: isJarvisListening || isJarvisSpeaking ? 170 : 140,
-      width: isJarvisListening || isJarvisSpeaking ? 170 : 140,
+      height: isJarvisListening || isJarvisSpeaking ? 160 : 130,
+      width: isJarvisListening || isJarvisSpeaking ? 160 : 130,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
             color: isJarvisListening
-                ? Colors.blueAccent.withOpacity(0.8)
+                ? colors.primary.withOpacity(0.5)
                 : isJarvisSpeaking
-                    ? Colors.orangeAccent.withOpacity(0.8)
-                    : Colors.cyanAccent.withOpacity(0.3),
-            blurRadius: isJarvisListening || isJarvisSpeaking ? 40 : 10,
-            spreadRadius: isJarvisListening || isJarvisSpeaking ? 25 : 4,
+                    ? colors.secondary.withOpacity(0.5)
+                    : Colors.transparent,
+            blurRadius: isJarvisListening || isJarvisSpeaking ? 20 : 0,
+            spreadRadius: isJarvisListening || isJarvisSpeaking ? 5 : 0,
           ),
         ],
         gradient: RadialGradient(
           colors: isJarvisListening
-              ? [Colors.blueAccent, Colors.black]
+              ? [colors.primary, const Color(0xFF1E293B)]
               : isJarvisSpeaking
-                  ? [Colors.orangeAccent, Colors.black]
-                  : [Colors.cyanAccent, Colors.black],
+                  ? [colors.secondary, const Color(0xFF1E293B)]
+                  : [const Color(0xFF334155), const Color(0xFF1E293B)],
         ),
       ),
       child: Center(
@@ -523,9 +527,9 @@ class _TransliterateTranslateHomeState
               ? Icons.mic
               : isJarvisSpeaking
                   ? Icons.volume_up
-                  : Icons.circle,
+                  : Icons.auto_awesome,
           color: Colors.white,
-          size: 50,
+          size: 40,
         ),
       ),
     );
@@ -742,38 +746,15 @@ class _TransliterateTranslateHomeState
           ),
         ),
       ),
-      body: Stack(
-        children: [
-          Container(color: const Color(0xFF0F0F1E)),
-          Positioned(
-            top: -100, left: -100,
-            child: Container(
-              width: 300, height: 300,
-              decoration: BoxDecoration(shape: BoxShape.circle, color: colors.primary.withOpacity(0.2)),
-            ),
-          ),
-          Positioned(
-            bottom: -50, right: -100,
-            child: Container(
-              width: 350, height: 350,
-              decoration: BoxDecoration(shape: BoxShape.circle, color: colors.secondary.withOpacity(0.2)),
-            ),
-          ),
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
-              child: Container(color: Colors.transparent),
-            ),
-          ),
-          SafeArea(
+      body: SafeArea(
             child: SingleChildScrollView(
               padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             Center(child: jarvisCircle()),
             SizedBox(height: 30),
 
-            // Source & Target pickers in a sleek glass container
-            GlassContainer(
+            // Source & Target pickers in a sleek professional card
+            ProfessionalCard(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               child: Row(children: [
                   Expanded(
@@ -816,12 +797,11 @@ class _TransliterateTranslateHomeState
                     ),
                   ),
                 ]),
-              ),
             ),
             SizedBox(height: 20),
 
             // Input text
-            GlassContainer(
+            ProfessionalCard(
               padding: EdgeInsets.zero,
               child: TextField(
                 controller: _controller,
@@ -898,8 +878,8 @@ class _TransliterateTranslateHomeState
             ]),
             SizedBox(height: 24),
 
-            // Output box (Glassmorphic look)
-            GlassContainer(
+            // Output box (Professional look)
+            ProfessionalCard(
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1016,8 +996,6 @@ class _TransliterateTranslateHomeState
           SizedBox(height: 12),
         ]),
         ),
-      ),
-      ],
       ),
     );
   }
