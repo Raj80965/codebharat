@@ -948,14 +948,14 @@ class _TransliterateTranslateHomeState
 
           SizedBox(height: 12),
 
-          if (_image != null) ...[
+          if (_imageBytes != null) ...[
             Divider(),
             Text('Captured image:',
                 style: TextStyle(fontWeight: FontWeight.bold)),
             SizedBox(height: 8),
             ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: Image.file(_image!)),
+                child: Image.memory(_imageBytes!)),
           ],
 
           SizedBox(height: 20),
